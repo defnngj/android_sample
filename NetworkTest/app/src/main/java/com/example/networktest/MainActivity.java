@@ -13,8 +13,10 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.List;
 
+import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -22,6 +24,7 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     TextView responseText;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +39,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view){
         if(view.getId() == R.id.send_request){
-            sendRequestWithOkHttp();
+            HttpUtil.sendOkHttpRequests("https://github.com/timeline.json", new okhttp3.Callback(){
+                @Override
+                public void onResponse(Call call, Response response) throws IOException{
+                    //得到服务器返回的具体内容
+                    String responseData = response.body().string();
+                    parseJSONWithGSON(responseData);
+                }
+
+                @Override
+                public void onFailure(Call call,IOException e){
+                    // 在这是对异常情况进行处理
+                    e.printStackTrace();
+                }
+            });
+            //sendRequestWithOkHttp();
         }
     }
 
